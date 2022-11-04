@@ -20,16 +20,48 @@ import { RT, RTTicket } from '@ucd-lib/rt-api';
 const TOKEN = 'xyz';
 const RTAPI = new RT(TOKEN);
 
-// hydrate ticket
+// initialize ticket
 const ticketToCreate = new RTTicket();
-ticketToCreate.setQueue('webdev');
-ticketToCreate.setSubject('Can you code up this thing?');
 
-// create ticket
+// queue is only required field to submit a ticket.
+// can take case-insensitive name or numeric id
+ticketToCreate.addQueue('webdev');
+
+// but it's good to include a subject...
+ticketToCreate.addSubject('Can you code up this thing?');
+
+// and content...
+ticketToCreate.addContent('I go in the ticket body.');
+ticketToCreate.addContent('Calling addContent again will append a new line.');
+ticketToCreate.addContent('By default, content type <b>is html</b>');
+
+// you can also quickly pass through simple structured data
+const DATA = {
+  yourName: 'Bender Rodriguez'
+  robotType: 'Bender Unit'
+  tags: ['libraries', 'are', 'great']
+}
+ticketToCreate.addContent(DATA);
+
+// ticket requestor
+ticketToCreate.addRequestor('requestor@ucdavis.edu');
+
+// any people to cc the request to
+ticketToCreate.addCc('someone@ucdavis.edu', 'someoneElse@ucdavis.edu');
+
+// add custom fields
+// if key or value does not exist, ticket will still be created
+ticketToCreate.addCustomField('SubQueue', 'Web');
+
+// add attachments by encoding content as base64
+ const anImage = fs.readFileSync('egghead.png');
+ const imageAsBase64 = Buffer.from(anImage).toString('base64');
+ ticketToCreate.addAttachment('egghead.png', 'image/png', imageAsBase64);
+
+// submit ticket to RT for creation
+// will return a node-fetch response object
 const response = await RTClient.createTicket(ticketToCreate);
-console.log(response.status);
 const d = await response.json();
-console.log(d);
 ```
 
 ## Additional Resources

@@ -10,4 +10,6 @@ npm i && npm link
 ```bash
 cd tests
 npm i && npm link @ucd-lib/rt-api
+touch .env
+echo 'TOKEN=xyz' >> .env
 ```

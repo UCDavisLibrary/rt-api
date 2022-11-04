@@ -72,6 +72,7 @@ export default class RT {
       headers: {'Content-Type': 'application/json'}
     };
     const response = await this._fetch(url, kwargs);
+    await ticket._onCreation(response);
     return response;
   }
 
