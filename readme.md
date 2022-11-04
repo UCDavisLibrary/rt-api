@@ -37,8 +37,8 @@ ticketToCreate.addContent('By default, content type <b>is html</b>');
 
 // you can also quickly pass through simple structured data
 const DATA = {
-  yourName: 'Bender Rodriguez'
-  robotType: 'Bender Unit'
+  yourName: 'Bender Rodriguez',
+  robotType: 'Bender Unit',
   tags: ['libraries', 'are', 'great']
 }
 ticketToCreate.addContent(DATA);
