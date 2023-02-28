@@ -18,6 +18,7 @@ export default class RT {
     this.host = 'https://rt.lib.ucdavis.edu';
     this.path = 'REST/2.0';
     this.token = '';
+    this.basicAuth = '';
     if ( !config ) return;
     if ( typeof config === 'string' ) {
       this.token = config;
@@ -31,7 +32,15 @@ export default class RT {
       if ( typeof config.path === 'string' ){
         this.path = config.path;
       }
+      if ( typeof config.basicAuth === 'string' ){
+        this.basicAuth = config.basicAuth;
+      }
     }
+    this.endpoints = {
+      ticket: 'ticket',
+      reply: 'correspond',
+      comment: 'comment'
+    };
   }
 
   /**
@@ -65,7 +74,7 @@ export default class RT {
     if ( !ticket ) {
       throw new Error('Pass a ticket as an arg');
     }
-    let url = 'ticket';
+    let url = `${this.host}/${this.path}/${this.endpoints['ticket']}`;
     let kwargs = {
       method: 'post', 
       body: JSON.stringify(ticket.makePayload()),
@@ -77,6 +86,30 @@ export default class RT {
   }
 
   /**
+   * @method sendCorrespondence
+   * @description Sends request to RT to add correspondence to a ticket
+   * @param {RTCorrespondence} correspondence - An RTCorrespondence class instance
+   */
+  async sendCorrespondence(correspondence){
+    if ( !correspondence ) {
+      throw new Error('Pass RTCorrespondence class as an arg');
+    }
+    let url;
+    if ( correspondence.ticketUrl ) {
+      url = `${correspondence.ticketUrl}/${this.endpoints[correspondence.type]}`;
+    } else {
+      url = `${this.host}/${this.path}/${this.endpoints.ticket}/${correspondence.ticketId}/${this.endpoints[correspondence.type]}`;
+    }
+    let kwargs = {
+      method: 'post', 
+      body: JSON.stringify(correspondence.makePayload()),
+      headers: {'Content-Type': 'application/json'}
+    };
+    const response = await this._fetch(url, kwargs);
+    return response;
+  }
+
+  /**
    * @method _fetch
    * @private
    * @description Adds boiler plate to fetch calls
@@ -84,15 +117,17 @@ export default class RT {
    * @returns {Response}
    */
   async _fetch(...args){
-    let url = `${this.host}/${this.path}`;
-    if ( args.length ) {
-      url = `${url}/${args[0]}`;
-    }
+    let url = args[0];
     let kwargs = args.length >=2 ? args[1] : {};
     if ( !kwargs.headers ) {
       kwargs.headers = {};
     }
-    kwargs.headers.Authorization = `token ${this.token}`;
+    if ( this.basicAuth ){
+      kwargs.headers.Authorization = `Basic ${Buffer.from(this.basicAuth).toString('base64')}`;
+    } else {
+      kwargs.headers.Authorization = `token ${this.token}`;
+    }
+    
     const response = await fetch(url, kwargs);
     return response;
   }

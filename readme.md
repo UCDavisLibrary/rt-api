@@ -64,5 +64,23 @@ const response = await RTClient.createTicket(ticketToCreate);
 const d = await response.json();
 ```
 
+## Adding correspondence
+Correspondence is either a comment (no email sent) or a reply (email is sent). A ticket must exist prior to adding correspondence.
+``` js
+// Add comment to existing ticket
+const ticket = new RTTicket({id: '76025'});
+const comment = ticket.createComment();
+comment.addSubject(`I have a comment`);
+comment.addContent('And here it is');
+const response = await RTClient.sendCorrespondence(comment);
+
+// Add reply to new ticket
+const ticket = new RTTicket({Queue: 'test', 'Subject': 'A New Ticket'});
+await RTClient.createTicket(ticket);
+const reply = ticket.createReply();
+reply.addSubject(`I am a reply`);
+const response = await RTClient.sendCorrespondence(reply);
+```
+
 ## Additional Resources
 - [Offical RT API Documentation](https://github.com/bestpractical/rt-extension-rest2/blob/master/README)

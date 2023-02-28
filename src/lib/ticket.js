@@ -1,3 +1,6 @@
+import RTCorrespondence from "./correspondence.js";
+import RTUtils from "./utils.js";
+
 /**
  * @class RTTicket
  * @classdesc Represents an RT Ticket
@@ -31,6 +34,8 @@ export default class RTTicket {
     if ( data.Cc ) this.cc = data.Cc;
     if ( data.CustomFields ) this.customFields = data.CustomFields;
     if ( data.Attachments ) this.attachments = data.Attachments;
+    
+    if ( data.id ) this.id = data.id;
   }
 
   /**
@@ -113,35 +118,7 @@ export default class RTTicket {
    * @param {Boolean} [addNewLine=true] - Appends content to new line.
    */
   addContent(content, addNewLine=true){
-    const lb = this.contentType == 'text/html' ? '<br>' : "\n";
-    const isHtml = this.contentType === 'text/html'; 
-    if ( this.content && addNewLine ){
-      this.content += lb;
-    }
-    if ( typeof content === 'string' ) {
-      this.content += content;
-    } else if ( Array.isArray(content) ){
-      this.content += content.join(', ');
-    } else if ( typeof content === 'object' &&  content !== null ) {
-      for (const k of Object.keys(content) ) {
-        let v = content[k];
-        if ( isHtml ) {
-          this.content += `<b>${k}</b>`;
-        } else {
-          this.content += k;
-        }
-        this.content += ': ';
-        if ( typeof v === 'string' ) {
-          this.content += v;
-        } else if (Array.isArray(v)){
-          this.content += v.join(', ');
-        } else if (typeof content === 'object') {
-          this.content += JSON.stringify(v);
-        }
-        this.content += lb;
-      }
-    }
-
+    this.content += RTUtils.formatContent(content, this.content, addNewLine, this.contentType);
   }
 
   /**
@@ -152,6 +129,7 @@ export default class RTTicket {
   addContentType(contentType){
     this.contentType = contentType;
   }
+
   /**
    * @method makePayload
    * @description Returns an object for the request body
@@ -183,6 +161,37 @@ export default class RTTicket {
     }
 
     return payload;
+  }
+
+  /**
+   * @method createReply
+   * @description Create a ticket reply (sends email)
+   * @param {Object} data - Comment api payload params
+   * @returns {RTCorrespondence}
+   */
+  createReply(data={}){
+    return new RTCorrespondence({
+      contentType: this.contentType,
+      ...data, 
+      ticketId: this.id, 
+      ticketUrl: this.url, 
+      type: 'reply'});
+  }
+
+  /**
+   * @method createComment
+   * @description Create a ticket comment (does not send email)
+   * @param {Object} data - Comment api payload params
+   * @returns {RTCorrespondence}
+   */
+  createComment(data={}){
+    return new RTCorrespondence({
+      contentType: this.contentType,
+      ...data, 
+      ticketId: this.id, 
+      ticketUrl: this.url, 
+      type: 'comment'
+    });
   }
 
   /**
