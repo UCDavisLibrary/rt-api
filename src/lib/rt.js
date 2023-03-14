@@ -39,7 +39,9 @@ export default class RT {
     this.endpoints = {
       ticket: 'ticket',
       reply: 'correspond',
-      comment: 'comment'
+      comment: 'comment',
+      history: 'ticket/:id/history',
+      transactions: 'transactions'
     };
   }
 
@@ -74,7 +76,7 @@ export default class RT {
     if ( !ticket ) {
       throw new Error('Pass a ticket as an arg');
     }
-    let url = `${this.host}/${this.path}/${this.endpoints['ticket']}`;
+    let url = `${this.host}/${this.path}/${this.endpoints.ticket}`;
     let kwargs = {
       method: 'post', 
       body: JSON.stringify(ticket.makePayload()),
@@ -110,6 +112,34 @@ export default class RT {
   }
 
   /**
+   * @method getTicketHistory
+   * @description Retrieves list of transactions for a ticket
+   * @param {RTTicket|String} ticket - A ticket class instance or a ticket id
+   * @param {Object} searchParams - Search params for url
+   */
+  async getTicketHistory(ticket, searchParams){
+    const ticketId =ticket.id ? ticket.id : ticket;
+    let url = `${this.host}/${this.path}/${this.endpoints.history.replace(':id', ticketId)}`;
+    url = this._appendUrlParams(url, searchParams);
+    const response = await this._fetch(url);
+    if ( ticket.id ){
+      ticket._onHistoryFetch(response);
+    }
+    return response;
+  }
+
+  async searchTransactions(query=[]){
+    const url = `${this.host}/${this.path}/${this.endpoints.transactions}`;
+    let kwargs = {
+      method: 'post', 
+      body: JSON.stringify(query),
+      headers: {'Content-Type': 'application/json'}
+    };
+    const response = await this._fetch(url, kwargs);
+    return response;
+  }
+
+  /**
    * @method _fetch
    * @private
    * @description Adds boiler plate to fetch calls
@@ -130,5 +160,18 @@ export default class RT {
     
     const response = await fetch(url, kwargs);
     return response;
+  }
+
+  /**
+   * @description Adds search params to url
+   * @private
+   * @param {String} url 
+   * @param {Object} params 
+   * @returns {String}
+   */
+  _appendUrlParams(url, params={}){
+    params = (new URLSearchParams(params)).toString();
+    if ( !params ) return url;
+    return `${url}?${params}`;
   }
 }

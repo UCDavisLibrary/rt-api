@@ -210,4 +210,19 @@ export default class RTTicket {
       this.creationError = error;
     }
   }
+
+  /**
+   * @method _onHistoryFetch
+   * @private
+   * @description Stores ticket history from fetch response
+   * @param {Response} response 
+   */
+  async _onHistoryFetch(response){
+    try {
+      const r = response.clone();
+      this.history = await r.json();
+    } catch (error) {
+      this.historyError = error;
+    }
+  }
 }

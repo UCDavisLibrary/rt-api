@@ -82,5 +82,16 @@ reply.addSubject(`I am a reply`);
 const response = await RTClient.sendCorrespondence(reply);
 ```
 
+## Ticket History
+Retrieve a list of transactions that occurred for a ticket (i.e. status change, correspondence, etc)
+```js
+const params = {
+  fields: 'Type,OldValue,NewValue,Field,Created,Creator',
+  per_page: 100,
+  page: 1
+}
+const response = await RTClient.getTicketHistory('76039', params);
+```
+
 ## Additional Resources
 - [Offical RT API Documentation](https://github.com/bestpractical/rt-extension-rest2/blob/master/README)
