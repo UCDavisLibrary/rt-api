@@ -9,8 +9,9 @@ const CREDS = {
 }
 
 //const url = 'https://rt.lib.ucdavis.edu/REST/2.0/transaction/1838250'
-const url = 'https://rt.lib.ucdavis.edu/REST/2.0/ticket/76039/history?fields=Type,OldValue,NewValue,Field,Created,Creator'
-
+//const url = 'https://rt.lib.ucdavis.edu/REST/2.0/ticket/76039/history?fields=Type,OldValue,NewValue,Field,Created,Creator'
+//const url = 'https://rt.lib.ucdavis.edu/REST/2.0/user/spelkey';
+const url = 'https://rt.lib.ucdavis.edu/REST/2.0/ticket/76211';
 const RTClient = new RT(CREDS);
 const response = await RTClient._fetch(url);
 const d = await response.json();

@@ -17,6 +17,7 @@ export default class RTTicket {
     this.contentType = 'text/html';
     this.content = '';
     this.requestor = '';
+    this.owner = '';
     this.cc = '';
     this.id = '';
     this.url = '';
@@ -34,6 +35,7 @@ export default class RTTicket {
     if ( data.Cc ) this.cc = data.Cc;
     if ( data.CustomFields ) this.customFields = data.CustomFields;
     if ( data.Attachments ) this.attachments = data.Attachments;
+    if ( data.Owner ) this.owner = data.Owner;
     
     if ( data.id ) this.id = data.id;
   }
@@ -54,6 +56,15 @@ export default class RTTicket {
    */
   addRequestor(requestor){
     this.requestor = requestor;
+  }
+
+  /**
+   * @method addOwner
+   * @description Add the ticket owner
+   * @param {String} owner - username
+   */
+  addOwner(owner){
+    this.owner = owner;
   }
 
   /**
@@ -149,6 +160,9 @@ export default class RTTicket {
     }
     if ( this.requestor ){
       payload.Requestor = this.requestor;
+    }
+    if ( this.owner ){
+      payload.Owner = this.owner;
     }
     if ( this.cc ){
       payload.Cc = this.cc;
