@@ -17,23 +17,28 @@ const RTClient = new RT(CREDS);
  * Existing Ticket
 */
 
-/**
-const ticket = new RTTicket({id: '76025'});
+
+const ticket = new RTTicket({id: '76212'});
 const reply = ticket.createReply();
 reply.addSubject(`I am a reply`);
 reply.addContent('How are you?');
-reply.addContent(`<a href='https://google.com'>here is a formatted link</a>`);
-*/
+//reply.addCreator('spelkey@ucdavis.edu');
+
 
 /**
  * New Ticket
  */
 
+/** 
 const ticket = new RTTicket({Queue: 'test', 'Subject': 'A New Ticket'});
 await RTClient.createTicket(ticket);
 const reply = ticket.createReply();
 reply.addSubject(`I am a reply`);
+*/
+
+
 const response = await RTClient.sendCorrespondence(reply);
 const d = await response.json();
 console.log(d);
+
 

@@ -22,6 +22,8 @@ export default class RTUtils {
     }
     if ( typeof newContent === 'string' ) {
       out += newContent;
+    } else if (typeof newContent === 'boolean'){
+      out += newContent.toString();
     } else if ( Array.isArray(newContent) ){
       out += newContent.join(', ');
     } else if ( typeof newContent === 'object' && newContent !== null ) {
@@ -35,6 +37,8 @@ export default class RTUtils {
         out += ': ';
         if ( typeof v === 'string' ) {
           out += v;
+        } else if (typeof v === 'boolean'){
+          out += v.toString();
         } else if (Array.isArray(v)){
           out += v.join(', ');
         } else if (typeof content === 'object') {
